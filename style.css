@@ -1,0 +1,13 @@
+/*
+Theme Name: BD-TUBE
+Author: Akash Mia
+Version: 1.0
+*/
+
+
+body {
+    font-family: "Roboto", "Noto Sans Bengali", system-ui, sans-serif;
+    background-color: #000000 !important;
+    margin: 0;
+    padding: 0;
+}

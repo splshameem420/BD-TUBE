@@ -1,0 +1,52 @@
+@media (max-width: 768px) {
+	.site-header {
+		gap: 8px;
+		padding: 0 8px;
+	}
+
+	.header-left,
+	.header-right {
+		gap: 4px;
+	}
+
+	.header-center {
+		flex: 1 1 auto;
+		min-width: 0;
+		gap: 4px;
+	}
+
+	.header-center .search-form {
+		min-width: 0;
+	}
+
+	.header-left .logo-text,
+	.create-btn .btn-text {
+		display: none;
+	}
+
+	.create-btn {
+		width: 40px;
+		padding: 0;
+		justify-content: center;
+	}
+
+	.notification-menu,
+	.profile-menu {
+		position: fixed;
+		top: 64px;
+		right: 8px;
+		max-width: calc(100vw - 16px);
+	}
+
+	.notification-menu {
+		width: min(360px, calc(100vw - 16px));
+	}
+
+	.profile-menu {
+		width: min(280px, calc(100vw - 16px));
+	}
+
+	.mini-sidebar {
+		display: none;
+	}
+}
