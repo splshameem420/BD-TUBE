@@ -1,3 +1,17 @@
+/*Header Main*/
+
+main, 
+#primary, 
+.site-main, 
+.main-content {
+    margin-left: 72px; /* mini-sidebar-er width (72px) onujayi jaga khali korbe */
+    box-sizing: border-box;
+    width: calc(100% - 72px);
+    transition: margin-left 0.25s ease;
+}
+
+/*Header Styles*/
+
 .site-header {
     display: flex;
     justify-content: space-between;
@@ -34,10 +48,9 @@
 }
 
 .header-left .icon-btn:hover {
-    background-color: var(--hover-bg);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Logo General Styles */
 .header-left .logo {
     display: flex;
     align-items: center;
@@ -46,7 +59,6 @@
     gap: 4px;
 }
 
-/* Custom Logo Image (WordPress Dashboard) */
 .header-left .custom-logo-wrapper img {
     max-height: 30px;
     width: auto;
@@ -54,21 +66,22 @@
     display: block;
 }
 
-/* Default Logo Icon & Text */
 .header-left .logo-icon {
     color: red;
     font-size: 28px;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .header-left .logo-text {
     font-family: 'Roboto', sans-serif;
-    font-size: 18px;
+    font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.5px;
     color: white;
 }
 
-/* Header Center Container */
+/* Search Section*/
+
 .header-center {
     display: flex;
     align-items: center;
@@ -77,37 +90,39 @@
     justify-content: center;
 }
 
-/* Form Layout */
 .search-form {
     display: flex;
     width: 100%;
     max-width: 600px;
+    position: relative;
 }
 
-/* Input Wrapper & Input Box */
 .search-input-wrapper {
     flex: 1;
     display: flex;
+    position: relative;
 }
 
 .search-form input {
     width: 100%;
     padding: 0 16px;
     height: 40px;
-    background-color: #fffcfc;
-    border: 1px solid var(--border-color, #303030);
+    background-color: black;
+    border: 1px solid #363535;
+    border-right: none;
     border-radius: 40px 0 0 40px;
-    color: #000000;
+    color: #fffdfd;
     font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
     outline: none;
-    box-shadow: inset #000000 0px 1px 2px 0px;
+    box-shadow: inset #494949 0px 1px 2px 0px;
 }
 
 .search-form input:focus {
     border-color: #e60e0e;
 }
 
-/* Search Submit Button */
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-results-button,
@@ -116,63 +131,13 @@ input[type="search"]::-webkit-search-results-decoration {
     display: none;
 }
 
-/* Header Center Container */
-.header-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    flex: 0 1 732px;
-}
-
-/* Search Form Alignment */
-.search-form {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 600px;
-    margin: 0;
-}
-
-/* Input Wrapper Fix */
-.search-input-wrapper {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    height: 40px;
-    /* Fixed Height */
-}
-
-/* Search Input Styling */
-.search-form input[type="text"],
-.search-form input[type="search"] {
-    width: 100%;
-    height: 40px !important;
-    padding: 0 40px 0 16px;
-    background-color: rgb(0, 0, 0);
-    border: 1px solid #464444;
-    border-right: none;
-    border-radius: 40px 0 0 40px;
-    color: rgb(255, 255, 255);
-    font-size: 16px;
-    outline: none;
-    box-sizing: border-box;
-}
-
-.search-form input:focus {
-    border-color: #1c62b9;
-}
-
-/* Search Submit Button Alignment Fix */
 .search-btn {
     width: 64px;
     height: 40px !important;
-    /* Input height-er shathe mil rakhbe */
-    background-color: #000000;
+    background-color: black;
     border: 1px solid #363535;
     border-radius: 0 40px 40px 0;
-    color: rgb(70, 67, 67);
+    color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -192,7 +157,6 @@ input[type="search"]::-webkit-search-results-decoration {
     line-height: 1;
 }
 
-/* Clear Cross Button */
 .clear-btn {
     position: absolute;
     right: 10px;
@@ -221,39 +185,20 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 20px;
 }
 
-/* Search Submit Button */
-.search-btn {
-    width: 64px;
-    height: 40px;
-    background-color: #504e4e;
-    border: 1px solid #000000;
-    border-left: none;
-    border-radius: 0 40px 40px 0;
-    color: var(--text-color, #ffffff);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-}
-
-.search-btn:hover {
-    background-color: var(--hover-bg, #272727);
-}
-
-/* Live Search Suggestions Dropdown Box */
 .search-suggestions {
     position: absolute;
-    top: 46px;
+    top: 100%;
     left: 0;
-    width: 100%;
-    background-color: var(--search-bg, #212121);
-    border: 1px solid var(--border-color, #303030);
+    width: calc(100% - 64px);
+    background-color: black;
+    border: 1px solid black;
+    border-top: none;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     z-index: 1001;
     overflow: hidden;
     padding: 8px 0;
+    margin-top: 4px;
 }
 
 .suggestion-item {
@@ -276,11 +221,12 @@ input[type="search"]::-webkit-search-results-decoration {
     color: #aaaaaa;
 }
 
-/* Mic Button */
+/* Mic Section */
+
 .mic-btn {
     background-color: #383636;
     border: none;
-    color: rgb(255, 255, 255);
+    color: white;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -300,7 +246,6 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 22px;
 }
 
-/* Mic Active State (কথা শোনার সময় লাল পালস অ্যানিমেশন) */
 .mic-btn.listening {
     background-color: var(--mic-active-bg, #cc0000) !important;
     color: var(--mic-active-color, #ffffff) !important;
@@ -317,7 +262,8 @@ input[type="search"]::-webkit-search-results-decoration {
     }
 }
 
-/* Create Menu Dropdown Box */
+/*Crete Function*/
+
 .header-right {
     display: flex;
     align-items: center;
@@ -328,13 +274,11 @@ input[type="search"]::-webkit-search-results-decoration {
     position: relative;
 }
 
-/* YouTube "+ Create" Button Style */
 .create-btn {
     display: flex;
     align-items: center;
     gap: 6px;
     background-color: #272727;
-    /* YouTube Dark Button BG */
     border: none;
     color: white;
     padding: 0 16px 0 12px;
@@ -354,13 +298,12 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 22px;
 }
 
-/* YouTube Dark Menu Box */
 .create-menu {
     position: absolute;
     top: 46px;
     left: 0;
     width: 175px;
-    background-color: black;
+    background-color: rgb(41, 39, 39);
     border: none;
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
@@ -369,7 +312,6 @@ input[type="search"]::-webkit-search-results-decoration {
     overflow: hidden;
 }
 
-/* Dropdown Menu Item */
 .create-item {
     display: flex;
     align-items: center;
@@ -391,11 +333,10 @@ input[type="search"]::-webkit-search-results-decoration {
     color: white;
 }
 
-/* Isolated Notification Dropdown Styles */
+/*Notification Section*/
+
 .notification-dropdown-wrapper {
     position: relative;
-    background-color: rgb(78, 77, 77);
-    border-radius: 50%;
 }
 
 .notification-btn {
@@ -434,7 +375,7 @@ input[type="search"]::-webkit-search-results-decoration {
     top: 48px;
     right: 0;
     width: 360px;
-    background-color: black;
+    background-color: rgb(56, 55, 55);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     z-index: 1000;
@@ -501,13 +442,13 @@ input[type="search"]::-webkit-search-results-decoration {
     color: var(--notification-time-color, #aaa);
 }
 
-/* User Profile Wrapper */
+/* User Profile section */
+
 .user-profile-wrapper {
     position: relative;
     margin-left: 4px;
 }
 
-/* Avatar Button */
 .profile-avatar-btn {
     background: none;
     border: none;
@@ -528,7 +469,6 @@ input[type="search"]::-webkit-search-results-decoration {
     object-fit: cover;
 }
 
-/* Sign In Button (YouTube Style) */
 .sign-in-btn {
     display: flex;
     align-items: center;
@@ -552,7 +492,6 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 20px;
 }
 
-/* Profile Dropdown Menu Box */
 .profile-menu {
     position: absolute;
     top: 44px;
@@ -565,7 +504,6 @@ input[type="search"]::-webkit-search-results-decoration {
     padding: 12px 0;
 }
 
-/* Profile Menu Header */
 .profile-menu-header {
     display: flex;
     gap: 12px;
@@ -605,14 +543,12 @@ input[type="search"]::-webkit-search-results-decoration {
     text-decoration: underline;
 }
 
-/* Menu Divider */
 .menu-divider {
     border: none;
     border-top: 1px solid #3f3f3f;
     margin: 8px 0;
 }
 
-/* Menu Item */
 .profile-menu-item {
     display: flex;
     align-items: center;
@@ -634,7 +570,8 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 
-/* Mini Sidebar (Default Left Bar) */
+/* Mini Sidebar Section */
+
 .mini-sidebar {
     position: fixed;
     top: 56px;
@@ -678,7 +615,8 @@ input[type="search"]::-webkit-search-results-decoration {
     text-align: center;
 }
 
-/* Full Drawer Overlay */
+/* Full Drawer Section */
+
 .drawer-overlay {
     position: fixed;
     top: 0;
@@ -694,7 +632,6 @@ input[type="search"]::-webkit-search-results-decoration {
     display: block !important;
 }
 
-/* Full Menu Drawer Box */
 .full-drawer {
     position: fixed;
     top: 0;
@@ -782,6 +719,29 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 18px;
 }
 
+/* Subscriptions Title Styling */
+.section-title-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    color: #f1f1f1 !important; /* Default blue link color remove korbe */
+    text-decoration: none !important; /* Underline remove korbe */
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.section-title-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.section-title-link .chevron {
+    font-size: 20px;
+    color: #aaaaaa;
+}
+
 .drawer-item {
     display: flex;
     align-items: center;
@@ -834,19 +794,18 @@ input[type="search"]::-webkit-search-results-decoration {
     margin: 12px 0;
 }
 
-/* Drawer Section Base */
 .drawer-section {
     padding: 12px 16px;
 }
 
-/* Horizontal Divider Line */
 .drawer-divider {
     border: none;
     border-top: 1px solid #3f3f3f;
     margin: 12px 0;
 }
 
-/* Footer Links Container */
+/*Footer Section*/
+
 .footer-links {
     display: flex;
     flex-wrap: wrap;
@@ -854,7 +813,6 @@ input[type="search"]::-webkit-search-results-decoration {
     margin-bottom: 12px;
 }
 
-/* Footer Links Styling */
 .footer-links a {
     color: #aaa;
     font-size: 13px;
@@ -867,7 +825,6 @@ input[type="search"]::-webkit-search-results-decoration {
     color: #fff;
 }
 
-/* Footer Copyright Text */
 .footer-copy {
     color: #717171;
     font-size: 12px;

@@ -72,7 +72,6 @@
 
         <!-- ৩. ডান পাশের অংশ (Create, Notification, Profile) -->
         <div class="header-right">
-
             <!-- Create Dropdown -->
             <div class="create-dropdown-wrapper">
                 <button type="button" class="create-btn" id="create-btn" title="Create" aria-haspopup="true"
@@ -212,15 +211,46 @@
                 <span class="material-icons" aria-hidden="true">home</span>
                 <span class="mini-label">Home</span>
             </a>
-            <a href="#" class="mini-item">
+            <a href="<?php echo esc_url(home_url('/shorts/')); ?>" class="mini-item">
                 <span class="material-icons" aria-hidden="true">bolt</span>
                 <span class="mini-label">Shorts</span>
             </a>
-            <a href="#" class="mini-item">
+
+            <?php
+            // Live post ache kina check kora (Variable Undefined error rodhe)
+            $has_live_now = false;
+            $recent_posts = get_posts( array(
+                'posts_per_page' => 20,
+                'post_status'    => 'publish'
+            ) );
+
+            if ( $recent_posts ) {
+                foreach ( $recent_posts as $post ) {
+                    if ( function_exists('bdtube_get_video_stats') ) {
+                        $stats_text = bdtube_get_video_stats( $post->ID );
+                        if ( strpos( $stats_text, 'watching now' ) !== false ) {
+                            $has_live_now = true;
+                            break;
+                        }
+                    }
+                }
+                wp_reset_postdata();
+            }
+            ?>
+
+            <a href="<?php echo esc_url( home_url('/live-tv') ); ?>" class="mini-item<?php echo is_page('live-tv') ? ' active' : ''; ?>">
+                <span class="material-icons" aria-hidden="true">tv</span>
+                <span class="mini-label">Live Tv</span>
+
+                <?php if ( $has_live_now ) : ?>
+                    <span class="mini-live-indicator" title="Live Streaming Now"></span>
+                <?php endif; ?>
+            </a>
+            <a href="<?php echo esc_url( home_url( '/for/subscriptions' ) ); ?>" class="mini-item">
                 <span class="material-icons" aria-hidden="true">subscriptions</span>
                 <span class="mini-label">Subscriptions</span>
             </a>
-            <a href="#" class="mini-item">
+            <a href="<?php echo esc_url( home_url( '/for/you' ) ); ?>" class="mini-item">
                 <span class="material-icons" aria-hidden="true">account_circle</span>
                 <span class="mini-label">You</span>
             </a>
@@ -255,60 +285,142 @@
                         <span class="material-icons" aria-hidden="true">home</span>
                         <span>Home</span>
                     </a>
-                    <a href="#" class="drawer-item">
+                    <a href="<?php echo esc_url(home_url('/shorts/')); ?>" class="drawer-item">
                         <span class="material-icons" aria-hidden="true">bolt</span>
                         <span>Shorts</span>
+                    </a>
+                    <a href="<?php echo esc_url( home_url('/live-tv') ); ?>" class="drawer-item<?php echo is_page('live-tv') ? ' active' : ''; ?>">
+                        <span class="material-icons" aria-hidden="true">live_tv</span>
+                        <span>Live Tv</span>
+                        <?php if ( isset($has_live_now) && $has_live_now ) : ?>
+                            <span class="live-indicator-dot" title="Live Streaming Now"></span>
+                        <?php endif; ?>
                     </a>
                 </div>
 
                 <hr class="drawer-divider">
-
-                <!-- Subscriptions (নমুনা চ্যানেল; via.placeholder.com বন্ধ হয়ে গেছে, তাই অক্ষরের গোল আইকন) -->
-                <div class="drawer-section">
-                    <div class="section-title">
+                
+                <div class="drawer-section" id="subscriptions-drawer-section">
+                    <!-- Subscriptions হেডার (ক্লিক করলে /for/subscriptions/ ফিডে নিয়ে যাবে) -->
+                    <a href="<?php echo esc_url( home_url( '/for/subscriptions' ) ); ?>" class="section-title-link">
                         <span>Subscriptions</span>
                         <span class="material-icons chevron" aria-hidden="true">chevron_right</span>
-                    </div>
+                    </a>
 
-                    <a href="#" class="drawer-item sub-channel">
-                        <span class="sub-avatar" aria-hidden="true">J</span>
-                        <span class="sub-name">Jamuna TV</span>
-                        <span class="live-dot" aria-hidden="true">((•))</span>
-                    </a>
-                    <a href="#" class="drawer-item sub-channel">
-                        <span class="sub-avatar" aria-hidden="true">A</span>
-                        <span class="sub-name">ATN Bangla News</span>
-                        <span class="unread-dot" aria-hidden="true">•</span>
-                    </a>
-                    <a href="#" class="drawer-item">
-                        <span class="material-icons" aria-hidden="true">expand_more</span>
-                        <span>Show more</span>
-                    </a>
+                    <?php 
+                    if ( is_user_logged_in() ) :
+                        $user_id = get_current_user_id();
+                        $subscribed_channels = get_user_meta( $user_id, 'subscribed_channels', true );
+
+                        if ( ! empty( $subscribed_channels ) && is_array( $subscribed_channels ) ) :
+                            
+                            // বেশি দেখা চ্যানেলের ক্রমানুসারে সাজানো
+                            usort( $subscribed_channels, function( $a, $b ) use ( $user_id ) {
+                                $views_a = (int) get_user_meta( $user_id, 'watch_count_channel_' . $a, true );
+                                $views_b = (int) get_user_meta( $user_id, 'watch_count_channel_' . $b, true );
+                                return $views_b - $views_a;
+                            });
+
+                            $count = 0;
+                            $limit = 7; // ডিফল্ট অবস্থা (শীর্ষ ৭টি)
+                            foreach ( $subscribed_channels as $channel_id ) :
+                                $user_info = get_userdata( $channel_id );
+                                if ( ! $user_info ) continue;
+
+                                $count++;
+                                $is_hidden = ( $count > $limit );
+
+                                // ১. লাইভ চ্যানেল চেক
+                                $has_live = false;
+                                $args_live = array(
+                                    'author'         => $channel_id,
+                                    'posts_per_page' => 1,
+                                    'post_status'    => 'publish'
+                                );
+                                $user_posts = get_posts( $args_live );
+                                if ( ! empty( $user_posts ) && function_exists( 'bdtube_get_video_stats' ) ) {
+                                    $stats = bdtube_get_video_stats( $user_posts[0]->ID );
+                                    if ( strpos( $stats, 'watching now' ) !== false ) {
+                                        $has_live = true;
+                                    }
+                                }
+
+                                // ২. আনরিড/নতুন ভিডিও চেক
+                                $has_unread = false;
+                                if ( ! $has_live && ! empty( $user_posts ) ) {
+                                    $last_post_time = strtotime( $user_posts[0]->post_date );
+                                    if ( ( time() - $last_post_time ) < ( 24 * 3600 ) ) {
+                                        $has_unread = true;
+                                    }
+                                }
+
+                                $avatar_url = get_avatar_url( $channel_id, array('size' => 28) );
+                                $first_letter = strtoupper( substr( $user_info->display_name, 0, 1 ) );
+                                ?>
+
+                                <a href="<?php echo esc_url( get_author_posts_url( $channel_id ) ); ?>" 
+                                class="drawer-item sub-channel <?php echo $is_hidden ? 'sub-hidden-item' : ''; ?>" 
+                                style="display: flex;">
+                                    
+                                    <div class="sub-channel-info">
+                                        <?php if ( $avatar_url ) : ?>
+                                            <img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $user_info->display_name ); ?>" class="sub-avatar-img">
+                                        <?php else : ?>
+                                            <span class="sub-avatar" aria-hidden="true"><?php echo esc_html( $first_letter ); ?></span>
+                                        <?php endif; ?>
+                                        <span class="sub-name"><?php echo esc_html( $user_info->display_name ); ?></span>
+                                    </div>
+
+                                    <?php if ( $has_live ) : ?>
+                                        <span class="live-dot" aria-hidden="true">((•))</span>
+                                    <?php elseif ( $has_unread ) : ?>
+                                        <span class="unread-dot" aria-hidden="true">•</span>
+                                    <?php endif; ?>
+                                </a>
+
+                            <?php endforeach; ?>
+
+                            <!-- Show More / Show Less বাটন -->
+                            <?php if ( count( $subscribed_channels ) > $limit ) : ?>
+                                <button type="button" id="toggle-sub-channels-btn" class="drawer-item toggle-btn" data-channels-url="<?php echo esc_url( home_url( '/for/channels' ) ); ?>">
+                                    <span class="material-icons toggle-icon" aria-hidden="true">expand_more</span>
+                                    <span class="toggle-text">Show more</span>
+                                </button>
+                            <?php endif; ?>
+
+                        <?php else : ?>
+                            <p class="empty-msg">No subscriptions yet.</p>
+                        <?php endif; ?>
+
+                    <?php else : ?>
+                        <p class="empty-msg">Sign in to see channels.</p>
+                    <?php endif; ?>
                 </div>
 
                 <hr class="drawer-divider">
 
                 <!-- You Section -->
                 <div class="drawer-section">
-                    <div class="section-title">
+                    <a href="<?php echo esc_url( home_url( '/for/subscriptions' ) ); ?>" class="section-title-link">
                         <span>You</span>
                         <span class="material-icons chevron" aria-hidden="true">chevron_right</span>
-                    </div>
-                    <a href="#" class="drawer-item">
+                    </a>
+
+                    <a href="<?php echo is_user_logged_in() ? esc_url( get_author_posts_url( get_current_user_id() ) ) : esc_url( wp_login_url() ); ?>" class="drawer-item">
                         <span class="material-icons" aria-hidden="true">account_box</span>
                         <span>Your channel</span>
                     </a>
-                    <a href="#" class="drawer-item">
+                    <a href="<?php echo esc_url( home_url( '/for/history' ) ); ?>" class="drawer-item">
                         <span class="material-icons" aria-hidden="true">history</span>
                         <span>History</span>
                     </a>
-                    <a href="#" class="drawer-item">
+                    <a href="<?php echo esc_url( home_url( '/for/playlists' ) ); ?>" class="drawer-item">
                         <span class="material-icons" aria-hidden="true">playlist_play</span>
                         <span>Playlists</span>
                     </a>
-                    <a href="#" class="drawer-item">
+                    <a href="<?php echo esc_url( home_url( '/for/watched' ) ); ?>" class="drawer-item">
                         <span class="material-icons" aria-hidden="true">watch_later</span>
-                        <span>Watch Later</span>
+                        <span>Watched</span>
                     </a>
                     <a href="#" class="drawer-item">
                         <span class="material-icons" aria-hidden="true">thumb_up_off_alt</span>
